@@ -13,11 +13,11 @@ class AsyncPGPromise:
 
   @staticmethod
   def _parse_sql(sql: str):
-    pattern = r'\$([\[\]\(\)\{\}/a-zA-Z0-9_]+)'
-    named_args = re.findall(pattern, sql)
+    pattern = r'\$[\[|\(|\{\\][a-zA-Z0-9_]+[\]\)\}\\]'
+    named_args = re.findall(pattern, sql, re.I)
 
     for i, arg in enumerate(named_args):
-      sql = sql.replace(f'${arg}', f'${i+1}')
+      sql = sql.replace(f'{arg}', f'${i+1}')
 
     return sql
 
@@ -30,7 +30,7 @@ class AsyncPGPromise:
     sql = self._parse_sql(sql)
     row = await self.conn.fetchrow(sql, *params.values())
 
-    return row
+    return dict(row)
 
   @staticmethod
   def _parse_json(row):
