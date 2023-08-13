@@ -30,7 +30,7 @@ class AsyncPGPromise:
     sql = self._parse_sql(sql)
     row = await self.conn.fetchrow(sql, *params.values())
 
-    return dict(row)
+    return row
 
   @staticmethod
   def _parse_json(row):
